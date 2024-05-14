@@ -1,0 +1,11 @@
+opencv-python~=4.9.0.80
+numpy~=1.26.3
+cvzone~=1.6.1
+torch~=2.2.0
+mediapipe~=0.10.9
+matplotlib~=3.8.2
+rembg~=2.0.54
+pandas~=2.2.2
+scikit-learn~=1.4.2
+future~=0.18.3
+customtkinter~=0.3

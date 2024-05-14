@@ -3,10 +3,33 @@ import cv2
 import numpy as np
 import cvzone
 from cvzone.PoseModule import PoseDetector
+import torch
+from neural_network import scaler, model, label_encoder
 
-def run_backend():
 
-    ClothsPath = "Assest/Clothes"
+def find_size(wt, ht, age):
+    # sequesnce : wt, age, ht
+    demo_data = np.array([[wt,age,ht]])
+
+    demo_data_scaled = scaler.transform(demo_data)
+
+    demo_data_tensor = torch.tensor(demo_data_scaled, dtype=torch.float32)
+
+    with torch.no_grad():
+        outputs = model(demo_data_tensor)
+        _, predicted_classes = torch.max(outputs.data, 1)
+
+    predicted_labels = label_encoder.inverse_transform(predicted_classes.numpy())
+    tshirt_s = ""
+    for i, label in enumerate(predicted_labels):
+        # print(f"T-shirt Size : {label}")
+        tshirt_s = label
+    # print(tshirt_s)
+    return tshirt_s
+
+def run_backend(wt, ht, age):
+
+    ClothsPath = "Assest/shirts"
     clothesList = os.listdir(ClothsPath)
     print(clothesList)
     fxedRatio = 267 / 180  # width of shirt / width of pt 11 to pt 12
@@ -27,7 +50,6 @@ def run_backend():
     ChangeToRight = 0
     ChangeToLeft = 0
 
-    # Load all images from the directory
     resized_images = []
     for img_name in clothesList:
         img_path = os.path.join(ClothsPath, img_name)
@@ -81,26 +103,32 @@ def run_backend():
             imgClothes = cv2.resize(imgClothes, (widthOfClothes, int(widthOfClothes * clothesRatioHeightWidth)))
 
             # Specify the number of pixels to move the clothes upwards
-            pixels_to_move_upwards = 100  # You can change this value as per your requirement
-            pixels_to_move_right = -90  # moving little bit on the left side
+            pixels_to_move_upwards = 130
+            pixels_to_move_right = -70  # moving little bit on the left side
 
             # Get window dimensions
             window_w = img.shape[1]  # Width of the current window
             window_h = img.shape[0]
             # Height of the current window
 
-            # Calculate target button coordinates relative to window size
-            target_x = 0.85 * window_w  # Right side of the window, with a margin
-            target_y = 0.15 * window_h  # Top of the window, with a margin
+            target_x = 0.85 * window_w  # Right side
+            target_y = 0.15 * window_h  # Top of the window
 
-            target_x_left = 0.03 * window_w  # Left side of the window, with a margin
-            target_y_left = 0.15 * window_h  # Top of the window, with a margin
+            target_x_left = 0.03 * window_w  # Left side
+            target_y_left = 0.15 * window_h  # Top of the window
 
             target_x_ChnageBtn = 0.03 * window_w
             target_y_ChangeBtn = 0.79 * window_h
 
+            # ====================== display size ===============================
+
+            t_shirt_size = find_size(wt, ht, age)
+            cv2.putText(img, t_shirt_size, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3)
+
+
+
+            # =====================================================================
             try:
-                # Adjust the y-coordinate of lm12 to move the clothes upwards
                 lm12_adjusted = (lm12[0] + pixels_to_move_right, lm12[1] - pixels_to_move_upwards)
                 img = cvzone.overlayPNG(img, imgClothes, lm12_adjusted)
 
@@ -113,13 +141,13 @@ def run_backend():
             img = cvzone.overlayPNG(img, BtnRight, (int(target_x), int(target_y)))
             img = cvzone.overlayPNG(img, BtnLeft, (int(target_x_left), int(target_y_left)))
 
-            frame_interval = 1 / 30 
+            frame_interval = 1 / 30
 
             if lmList[16][1] < 300:
                 ChangeToRight += 1
                 # Calculate the remaining time
-                remaining_time = max(0, 1 - ChangeToRight * frame_interval)  # Ensure the time is not negative
-                text = f"Time: {remaining_time:.1f} sec"  # Format the time as a floating-point number with one decimal place
+                remaining_time = max(0, 1 - ChangeToRight * frame_interval)
+                text = f"Time: {remaining_time:.1f} sec"
                 # Display the countdown timer
                 cv2.putText(img, text, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
 
@@ -129,12 +157,10 @@ def run_backend():
                     if ImgNum < len(clothesList) - 1:
                         ImgNum += 1
 
-            elif lmList[15][0] > 950:  # Use the left wrist landmark (lmList[15]) for detecting leftward movement
+            elif lmList[15][0] > 950:
                 ChangeToLeft += 1
-                # Calculate the remaining time
                 remaining_time = max(0, 1 - ChangeToLeft * frame_interval)  # Ensure the time is not negative
                 text = f"Time: {remaining_time:.1f} sec"  # Format the time as a floating-point number with one decimal place
-                # Display the countdown timer
                 cv2.putText(img, text, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
 
                 if remaining_time == 0:  # If countdown ends
