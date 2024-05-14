@@ -29,7 +29,7 @@ def find_size(wt, ht, age):
 
 def run_backend(wt, ht, age):
 
-    ClothsPath = "Assest/shirts"
+    ClothsPath = "Assest/Clothes"
     clothesList = os.listdir(ClothsPath)
     print(clothesList)
     fxedRatio = 267 / 180  # width of shirt / width of pt 11 to pt 12
@@ -100,7 +100,13 @@ def run_backend(wt, ht, age):
 
             widthOfClothes = int((lm11[0] - lm12[0]) * fxedRatio)
 
-            imgClothes = cv2.resize(imgClothes, (widthOfClothes, int(widthOfClothes * clothesRatioHeightWidth)))
+            # imgClothes = cv2.resize(imgClothes, (widthOfClothes, int(widthOfClothes * clothesRatioHeightWidth)))
+            # Before cv2.resize operation
+            # print("Image data:", imgClothes)
+            try:
+                imgClothes = cv2.resize(imgClothes, (widthOfClothes, int(widthOfClothes * clothesRatioHeightWidth)))
+            except cv2.error as e:
+                print("Error during image resize:", e)
 
             # Specify the number of pixels to move the clothes upwards
             pixels_to_move_upwards = 130
