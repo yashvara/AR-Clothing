@@ -110,7 +110,7 @@ def run_backend(wt, ht, age):
 
             # Specify the number of pixels to move the clothes upwards
             pixels_to_move_upwards = 130
-            pixels_to_move_right = -70  # moving little bit on the left side
+            pixels_to_move_right = -80  # moving little bit on the left side
 
             # Get window dimensions
             window_w = img.shape[1]  # Width of the current window

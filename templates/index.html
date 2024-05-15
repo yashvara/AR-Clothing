@@ -6,20 +6,75 @@
     <title>AR Clothing</title>
     <style>
         /* Add any custom CSS styles here */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
         .tkinter-container {
-            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
             padding: 20px;
             border: 2px solid #ccc;
             border-radius: 10px;
             background-color: #f9f9f9;
         }
+
+        #loadButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #loadButton:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to AR Clothing</h1>
-    <div class="tkinter-container">
-        <!-- Embed your Tkinter GUI here -->
-        <iframe src="/gui" style="border: none; width: 100%; height: 800px;"></iframe>
+    <div class="tkinter-container" id="tkinterContainer">
+        <!-- Tkinter GUI will be loaded here -->
     </div>
+
+    <script>
+        // Function to load Tkinter GUI when button is clicked
+        function loadTkinterGUI() {
+            // Create an iframe to load the GUI
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('src', '/gui');
+            iframe.setAttribute('style', 'border: none; width: 100%; height: 800px;');
+            document.getElementById('tkinterContainer').appendChild(iframe);
+
+            // Remove the button after it's clicked
+            document.getElementById('loadButton').remove();
+        }
+
+        // Create and append the button when the page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            var button = document.createElement('button');
+            button.textContent = 'Start Simulation';
+            button.setAttribute('id', 'loadButton');
+            button.setAttribute('onclick', 'loadTkinterGUI()');
+            document.getElementById('tkinterContainer').appendChild(button);
+        });
+    </script>
 </body>
 </html>

@@ -1,15 +1,18 @@
-from flask import Flask, render_template
 import user_interface
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    # Render the Tkinter GUI and convert it to a string
-    ui_html = user_interface.create_ui()
+    # Render the HTML template without the button initially
+    return render_template('index.html')
 
-    # Render the HTML template with the Tkinter GUI included
-    return render_template('index.html', ui_html=ui_html)
+@app.route('/gui')
+def gui():
+    # Render the Tkinter GUI
+    ui_html = user_interface.create_ui()
+    return ui_html
 
 if __name__ == "__main__":
     app.run(debug=True)

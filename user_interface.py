@@ -5,7 +5,6 @@ import cv2
 
 import backend
 
-
 def create_ui():
     # Create the Tkinter window
     root = tk.Tk()
@@ -15,6 +14,19 @@ def create_ui():
     # Load the image
     image_path = "Assest/Intro/intro_img.png"
     root.image = tk.PhotoImage(file=image_path)
+
+    # Function to stop camera capture and close the application
+    def close_application():
+        # Stop camera capture
+        # Add code here to stop the camera capture, if applicable
+        # For example:
+        # camera.release()
+
+        # Close the Tkinter window
+        root.destroy()
+
+    # Bind the close button (X) to the close_application function
+    root.protocol("WM_DELETE_WINDOW", close_application)
 
     def initialize_ui():
         # Display the image on the left side
@@ -60,5 +72,9 @@ def create_ui():
 
     # Run the Tkinter event loop
     initialize_ui()
+    # Instead of root.mainloop(), use root.mainloop() at the end to ensure the function returns the UI HTML
     root.mainloop()
 
+    # Since Tkinter's mainloop() doesn't return, the function will continue here only after the window is closed
+    # You can return any HTML content here if needed
+    return "<h1>UI created successfully</h1>"
