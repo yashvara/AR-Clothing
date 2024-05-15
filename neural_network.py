@@ -18,7 +18,7 @@ if columns_with_nan:
         if dataset[col].dtype == 'object':
             dataset[col].fillna(dataset[col].mode()[0], inplace=True)
         else:
-            dataset[col].fillna(dataset[col].mean(), inplace=True)
+            dataset.fillna({col: dataset[col].mean()}, inplace=True)
 
 # Convert columns to numeric types
 numeric_cols = ['age', 'height']
